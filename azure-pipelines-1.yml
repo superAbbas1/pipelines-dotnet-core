@@ -1,0 +1,26 @@
+trigger:
+- master  # or main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  buildConfiguration: 'Release'
+
+steps:
+- script: dotnet restore
+  displayName: 'Restore dependencies'
+
+- script: dotnet build --configuration $(buildConfiguration)
+  displayName: 'Build project'
+
+- script: dotnet test --configuration $(buildConfiguration)
+  displayName: 'Run tests'
+
+- script: dotnet publish --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)
+  displayName: 'Publish artifacts'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathToPublish: '$(Build.ArtifactStagingDirectory)'
+    artifactName: 'drop'
